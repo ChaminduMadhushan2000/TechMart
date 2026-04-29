@@ -1,45 +1,54 @@
-export interface HeroBannerProps {
-  heading: string;
-  subheading: string;
-  buttonText: string;
-  buttonLink: string;
-  backgroundImageURL: string;
-  overlayColor: string;
-}
+import { ChevronRight } from "lucide-react";
 
-function HeroBanner(props: HeroBannerProps): JSX.Element {
-  const { heading, subheading, buttonText, buttonLink, backgroundImageURL, overlayColor } =
-    props;
-  const overlayClassName: string =
-    overlayColor === "#000000" ? "bg-black/45" : "bg-slate-900/45";
-
+const HeroBanner = () => {
   return (
-    <section className="relative overflow-hidden rounded-xl" aria-label="Hero Banner">
-      <img
-        src={backgroundImageURL}
-        alt="Featured electronics deals"
-        width={1400}
-        height={520}
-        loading="eager"
-        fetchPriority="high"
-        className="h-[360px] w-full object-cover md:h-[460px]"
-      />
-      <div className={`absolute inset-0 ${overlayClassName}`} />
-      <div className="absolute inset-0 flex items-center px-6 md:px-12">
-        <div className="max-w-lg text-white">
-          <p className="mb-3 text-sm uppercase tracking-widest text-brandYellow">Top Offers</p>
-          <h1 className="mb-4 text-3xl font-bold md:text-5xl">{heading}</h1>
-          <p className="mb-6 text-base text-white/90 md:text-lg">{subheading}</p>
-          <a
-            href={buttonLink}
-            className="inline-flex min-h-11 items-center rounded-md bg-brandYellow px-6 py-2 font-semibold text-black transition hover:bg-yellow-300"
-          >
-            {buttonText}
-          </a>
+    <section className="relative overflow-hidden bg-slate-900" aria-label="Hero Banner">
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80"
+          alt="Featured electronics deals"
+          className="h-full w-full object-cover opacity-60 transition-transform duration-[10s] hover:scale-110"
+          loading="eager"
+        />
+      </div>
+
+      <div className="absolute inset-0 z-10 bg-gradient-to-r from-slate-900 via-slate-900/60 to-transparent" />
+
+      <div className="relative z-20 flex min-h-[400px] items-center px-8 md:min-h-[520px] md:px-20">
+        <div className="max-w-2xl text-white">
+          {/* <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-brandYellow/10 px-4 py-1 text-sm font-bold tracking-widest text-brandYellow ring-1 ring-brandYellow/30">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brandYellow opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-brandYellow"></span>
+            </span>
+            LIMITED TIME OFFERS
+          </div> */}
+
+          <h1 className="mb-6 text-4xl font-black leading-tight md:text-7xl">
+            Experience the <br />
+            <span className="text-brandYellow">Future of Tech</span>
+          </h1>
+
+          <p className="mb-10 max-w-lg text-lg text-slate-300 md:text-xl">
+            Upgrade your lifestyle with our exclusive collection of high-performance electronics.
+          </p>
+
+          <div className="flex flex-wrap gap-4">
+            <a
+              href="/products"
+              className="group flex h-14 items-center justify-center gap-2 rounded-xl bg-brandYellow px-8 font-black text-slate-900 transition-all hover:bg-yellow-400 hover:shadow-lg hover:shadow-yellow-400/20"
+            >
+              Shop Now
+              <ChevronRight size={20} className="transition-transform group-hover:translate-x-1" />
+            </a>
+          </div>
         </div>
       </div>
+
+      {/* Subtle bottom accent */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-brandYellow via-transparent to-transparent opacity-50" />
     </section>
   );
-}
+};
 
 export default HeroBanner;
