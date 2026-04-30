@@ -36,10 +36,10 @@ const ShopByCategory = () => {
             <a
               key={category.id}
               href={category.href}
-              className="flex flex-col items-center justify-center min-h-32 rounded-md border border-slate-100 bg-slate-50 px-3 py-5 text-sm font-semibold transition-all hover:border-brandYellow hover:shadow-md group"
+              className="flex flex-col items-center justify-center min-h-32 rounded-md border border-slate-100 bg-slate-50 px-3 py-5 text-sm font-semibold transition-all hover:border-brandYellow hover:font-bold hover:shadow-md hover:-translate-y-1 group"
             >
-              <div className="bg-gray-200 p-3 rounded-full mb-3 group-hover:bg-brandYellow transition-colors">
-                <Icon size={24} className="text-slate-700" />
+              <div className="bg-brandYellow/5 p-3 rounded-full mb-3 transition-colors">
+                <Icon size={24} className="text-brandYellow" />
               </div>
               <p className="text-center">{category.name}</p>
             </a>
