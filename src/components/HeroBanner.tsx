@@ -1,8 +1,12 @@
 import { ChevronRight } from "lucide-react";
+import Navbar from "./Navbar";
+import Header from './Header';
 
 const HeroBanner = () => {
   return (
     <section className="relative overflow-hidden bg-slate-900" aria-label="Hero Banner">
+      <Header />
+      <Navbar />
       <div className="absolute inset-0 z-0">
         <img
           src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80"
@@ -36,7 +40,7 @@ const HeroBanner = () => {
           <div className="flex flex-wrap gap-4">
             <a
               href="/products"
-              className="group flex h-14 items-center justify-center gap-2 rounded-xl bg-brandYellow px-8 font-black text-slate-900 transition-all hover:bg-yellow-400 hover:shadow-lg hover:shadow-yellow-400/20"
+              className="group flex h-14 items-center justify-center gap-2 rounded-xl bg-brandYellow px-8 font-bold text-slate-900 text-lg transition-all hover:bg-yellow-400 hover:shadow-lg hover:shadow-yellow-400/20"
             >
               Shop Now
               <ChevronRight size={20} className="transition-transform group-hover:translate-x-1" />

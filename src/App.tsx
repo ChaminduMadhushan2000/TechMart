@@ -1,6 +1,4 @@
 import { BrowserRouter } from 'react-router-dom';
-import Navbar from "./components/Navbar";
-import Header from './components/Header';
 import HeroBanner from "./components/HeroBanner";
 import TrustBadges from "./components/TrustBadges";
 import DealBanners from "./components/DealBanners";
@@ -15,12 +13,10 @@ function App(): JSX.Element {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-[#f6f6f6]">
-        <Header />
-        <Navbar />
+
         <HeroBanner />
 
         <main className="flex flex-col gap-8 px-10 py-6">
-
           <TrustBadges />
           <DealBanners />
           <ShopByCategory />

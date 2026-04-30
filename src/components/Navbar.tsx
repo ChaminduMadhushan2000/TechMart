@@ -1,3 +1,4 @@
+import { SearchIcon } from 'lucide-react';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -21,10 +22,10 @@ const Navbar = () => {
     };
 
     return (
-        <div className="bg-brandYellow">
-            <div className="flex items-center justify-between px-6 py-2">
+        <div className="bg-brandYellow sticky top-0 z-50">
+            <div className="flex items-center justify-between px-12 py-2">
                 {/* Nav Links - Left */}
-                <div className="flex items-center gap-8 text-sm font-bold uppercase tracking-wider">
+                <div className="flex items-center gap-8 ml-2 text-sm font-bold uppercase tracking-wider">
                     {navItems.map((item) => (
                         <NavLink
                             key={item.path}
@@ -45,7 +46,7 @@ const Navbar = () => {
                 {/* Search Bar - Right */}
                 <form onSubmit={handleSearch} className="flex items-center">
                     <div
-                        className={`flex items-center gap-2 bg-white rounded-full px-3 py-1.5 transition-all duration-200 ${isSearchFocused ? 'ring-2 ring-brandPrimary' : ''
+                        className={`flex items-center gap-2 bg-white rounded-full px-4 py-1.5 transition-all duration-200 ${isSearchFocused ? 'ring-2 ring-brandPrimary' : ''
                             }`}
                     >
                         <input
@@ -54,28 +55,16 @@ const Navbar = () => {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onFocus={() => setIsSearchFocused(true)}
                             onBlur={() => setIsSearchFocused(false)}
-                            placeholder="Search products..."
-                            className="text-sm outline-none bg-transparent w-48 placeholder-gray-400"
+                            placeholder="Search Products..."
+                            className="text-sm outline-none bg-transparent w-72 placeholder-gray-400"
                         />
                         <button
                             type="submit"
                             className="text-gray-500 hover:text-brandPrimary transition-colors"
                             aria-label="Search"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={2.5}
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"
-                                />
-                            </svg>
+                            <SearchIcon size={20} />
+
                         </button>
                     </div>
                 </form>
