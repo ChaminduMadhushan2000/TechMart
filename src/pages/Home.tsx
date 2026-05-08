@@ -40,12 +40,12 @@ const FALLBACK_SECTIONS: HomepageSection[] = [
 //  Fetch helper 
 async function fetchSections(): Promise<HomepageSection[]> {
     // enter API 
-    // const res = await fetch("https://your-api.com/api/homepage-sections");
-    // if (!res.ok) throw new Error(`API error: ${res.status}`);
-    // return res.json() as Promise<HomepageSection[]>;
+    const res = await fetch("http://localhost:3001/api/storefront/homepage/sections?storeId=aa9e3bda-60d3-4b10-be5f-2685e15c7f1b");
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    return res.json() as Promise<HomepageSection[]>;
 
     // Simulation // comment this
-    return Promise.resolve(FALLBACK_SECTIONS);
+    //return Promise.resolve(FALLBACK_SECTIONS);
 }
 
 //  Component 
