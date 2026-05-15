@@ -1,10 +1,20 @@
-const PromoBanners = () => {
+interface PromoBannersProps {
+  banner1Text?: string;
+  banner1Link?: string;
+  banner1Image?: string;
+}
+
+const PromoBanners = ({
+  banner1Text = "Weekend Sale — 20% Off",
+  banner1Link = "/sale",
+  banner1Image = "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1600&q=80",
+}: PromoBannersProps) => {
   return (
     <section aria-label="Promo Banner" className="group">
-      <a href="/sale" className="relative block h-[200px] overflow-hidden rounded-2xl md:h-[260px]">
+      <a href={banner1Link} className="relative block h-[200px] overflow-hidden rounded-2xl md:h-[260px]">
         <img
-          src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1600&q=80"
-          alt="Weekend Sale — 20% Off"
+          src={banner1Image}
+          alt={banner1Text}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
         />
@@ -13,9 +23,7 @@ const PromoBanners = () => {
           <span className="mb-2 inline-block w-fit rounded-full bg-red-600 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
             Limited Time Offer
           </span>
-          <h2 className="max-w-md text-3xl font-black text-white md:text-5xl">
-            Weekend Sale <br /> <span className="text-brandYellow">20% Off</span>
-          </h2>
+          <h2 className="max-w-md text-3xl font-black text-white md:text-5xl">{banner1Text}</h2>
           <button className="mt-6 w-fit rounded-full bg-white px-8 py-3 text-sm font-bold text-slate-900 transition-all hover:bg-brandYellow">
             Shop the Sale
           </button>

@@ -1,6 +1,20 @@
 import { LockKeyhole, PackageCheck, ShieldCheck, Tag, TruckIcon } from "lucide-react";
 
-const TrustBadges = () => {
+interface TrustBadgesProps {
+  badge1Text?: string;
+  badge2Text?: string;
+  badge3Text?: string;
+  badge4Text?: string;
+  badge5Text?: string;
+}
+
+const TrustBadges = ({
+  badge1Text = "Free Delivery",
+  badge2Text = "1 Year Warranty",
+  badge3Text = "Easy Returns",
+  badge4Text = "Secure Payment",
+  badge5Text = "Best Brands",
+}: TrustBadgesProps) => {
 
   return (
     <div className="grid gap-2 rounded-xl bg-white p-4 shadow-sm md:grid-cols-5" aria-label="Trust Badges">
@@ -8,31 +22,31 @@ const TrustBadges = () => {
         <div className="bg-brandYellow/5 p-3 rounded-full mb-1">
           <TruckIcon className="text-brandYellow" />
         </div>
-        <p>Free Delivery</p>
+        <p>{badge1Text}</p>
       </div>
       <div className="flex flex-row items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-base font-semibold">
         <div className="bg-brandYellow/5 p-3 rounded-full mb-1">
           <ShieldCheck className="text-brandYellow" />
         </div>
-        <p>1 Year Warranty</p>
+        <p>{badge2Text}</p>
       </div>
       <div className="flex flex-row items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-base font-semibold">
         <div className="bg-brandYellow/5 p-3 rounded-full mb-1">
           <PackageCheck className="text-brandYellow" />
         </div>
-        <p>Easy Returns</p>
+        <p>{badge3Text}</p>
       </div>
       <div className="flex flex-row items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-base font-semibold">
         <div className="bg-brandYellow/5 p-3 rounded-full mb-1">
           <LockKeyhole className="text-brandYellow" />
         </div>
-        <p>Secure Payment</p>
+        <p>{badge4Text}</p>
       </div>
       <div className="flex flex-row items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-base font-semibold">
         <div className="bg-brandYellow/5 p-3 rounded-full mb-1">
           <Tag className="text-brandYellow" />
         </div>
-        <p>Best Brands</p>
+        <p>{badge5Text}</p>
       </div>
     </div>
   );

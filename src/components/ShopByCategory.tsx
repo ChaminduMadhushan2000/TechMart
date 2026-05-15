@@ -1,37 +1,77 @@
-import {
-  Tv,
-  Smartphone,
-  Laptop,
-  Gamepad2,
-  Camera,
-  Headphones,
-  Watch,
-  Home
-} from "lucide-react";
+import type { ComponentType } from "react";
+import { Tv, Smartphone, Laptop, Gamepad2, Camera, Headphones, Watch, Home } from "lucide-react";
 
-const categories = [
-  { id: "c1", name: "TV & Audio", href: "/products?category=tv-audio", icon: Tv },
-  { id: "c2", name: "Smartphones", href: "/products?category=smartphones", icon: Smartphone },
-  { id: "c3", name: "Laptops", href: "/products?category=laptops", icon: Laptop },
-  { id: "c4", name: "Gaming", href: "/products?category=gaming", icon: Gamepad2 },
-  { id: "c5", name: "Cameras", href: "/products?category=cameras", icon: Camera },
-  { id: "c6", name: "Accessories", href: "/products?category=accessories", icon: Headphones },
-  { id: "c7", name: "Wearables", href: "/products?category=wearables", icon: Watch },
-  { id: "c8", name: "Home Tech", href: "/products?category=home-tech", icon: Home },
+interface CategoryCard {
+  id: string;
+  name: string;
+  href: string;
+  icon?: ComponentType<{ size?: number; className?: string }>;
+  slug?: string;
+}
+
+interface ShopByCategoryProps {
+  sectionTitle?: string;
+  showAllButton?: boolean;
+  maxCategoriesShown?: number;
+  categories?: CategoryCard[];
+}
+
+const fallbackCategories: CategoryCard[] = [
+  { id: "c1", name: "TV & Audio", href: "/products?category=tv-audio", icon: Tv, slug: "tv-audio" },
+  { id: "c2", name: "Smartphones", href: "/products?category=smartphones", icon: Smartphone, slug: "smartphones" },
+  { id: "c3", name: "Laptops", href: "/products?category=laptops", icon: Laptop, slug: "laptops" },
+  { id: "c4", name: "Gaming", href: "/products?category=gaming", icon: Gamepad2, slug: "gaming" },
+  { id: "c5", name: "Cameras", href: "/products?category=cameras", icon: Camera, slug: "cameras" },
+  { id: "c6", name: "Accessories", href: "/products?category=accessories", icon: Headphones, slug: "accessories" },
+  { id: "c7", name: "Wearables", href: "/products?category=wearables", icon: Watch, slug: "wearables" },
+  { id: "c8", name: "Home Tech", href: "/products?category=home-tech", icon: Home, slug: "home-tech" },
 ];
 
-const ShopByCategory = () => {
+const iconMap: Record<string, ComponentType<{ size?: number; className?: string }>> = {
+  tv: Tv,
+  television: Tv,
+  audio: Tv,
+  smartphone: Smartphone,
+  phone: Smartphone,
+  laptop: Laptop,
+  computer: Laptop,
+  gaming: Gamepad2,
+  game: Gamepad2,
+  camera: Camera,
+  accessory: Headphones,
+  headphone: Headphones,
+  wearable: Watch,
+  home: Home,
+};
+
+function resolveIcon(category: CategoryCard) {
+  if (category.icon) return category.icon;
+  const key = (category.slug || category.name).toLowerCase();
+  const match = Object.keys(iconMap).find((token) => key.includes(token));
+  return match ? iconMap[match] : Home;
+}
+
+const ShopByCategory = ({
+  sectionTitle = "Shop by Category",
+  showAllButton = true,
+  maxCategoriesShown = 8,
+  categories = fallbackCategories,
+}: ShopByCategoryProps) => {
+  const visible = categories.slice(0, maxCategoriesShown);
+
   return (
     <section className="rounded-xl bg-white p-5 shadow-sm" aria-label="Shop By Category">
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold ">Shop by Category</h2>
-        <a href="/products" className="text-sm font-semibold text-blue-600 hover:text-blue-700">
-          Show all
-        </a>
+        <h2 className="text-2xl font-bold ">{sectionTitle}</h2>
+        {showAllButton ? (
+          <a href="/products" className="text-sm font-semibold text-blue-600 hover:text-blue-700">
+            Show all
+          </a>
+        ) : null}
       </div>
       <div className="grid grid-cols-4 gap-4 ">
-        {categories.map((category) => {
-          const Icon = category.icon;
+        {visible.map((category) => {
+          const Icon = resolveIcon(category);
           return (
             <a
               key={category.id}

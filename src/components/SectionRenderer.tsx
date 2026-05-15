@@ -1,4 +1,5 @@
-import type { HomepageSection } from "../api";
+import type { HomepageSection, Category, Product } from "../types/storefront";
+import type { ProductCard } from "./FeaturedProducts";
 
 import HeroBanner from "./HeroBanner";
 import TrustBadges from "./TrustBadges";
@@ -13,17 +14,17 @@ import Newsletter from "./Newsletter";
 // ─── Default data (fallbacks when config doesn't provide data) ───────────────
 
 const defaultCategories = [
-  { id: "c1", name: "TV & Audio", href: "/products?category=tv-audio" },
-  { id: "c2", name: "Smartphones", href: "/products?category=smartphones" },
-  { id: "c3", name: "Laptops", href: "/products?category=laptops" },
-  { id: "c4", name: "Gaming", href: "/products?category=gaming" },
-  { id: "c5", name: "Cameras", href: "/products?category=cameras" },
-  { id: "c6", name: "Accessories", href: "/products?category=accessories" },
-  { id: "c7", name: "Wearables", href: "/products?category=wearables" },
-  { id: "c8", name: "Home Tech", href: "/products?category=home-tech" },
+  { id: "c1", name: "TV & Audio", href: "/products?category=tv-audio", slug: "tv-audio" },
+  { id: "c2", name: "Smartphones", href: "/products?category=smartphones", slug: "smartphones" },
+  { id: "c3", name: "Laptops", href: "/products?category=laptops", slug: "laptops" },
+  { id: "c4", name: "Gaming", href: "/products?category=gaming", slug: "gaming" },
+  { id: "c5", name: "Cameras", href: "/products?category=cameras", slug: "cameras" },
+  { id: "c6", name: "Accessories", href: "/products?category=accessories", slug: "accessories" },
+  { id: "c7", name: "Wearables", href: "/products?category=wearables", slug: "wearables" },
+  { id: "c8", name: "Home Tech", href: "/products?category=home-tech", slug: "home-tech" },
 ];
 
-const defaultProducts = [
+const defaultProducts: ProductCard[] = [
   { id: "p1", name: "AstraBook Pro 14", price: "Rs. 219,999", image: "https://images.unsplash.com/photo-1517336714739-489689fd1ca8?auto=format&fit=crop&w=800&q=80" },
   { id: "p2", name: "NeoPhone X12", price: "Rs. 159,999", image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80" },
   { id: "p3", name: "Pulse Buds 3", price: "Rs. 21,999", image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=800&q=80" },
@@ -46,6 +47,41 @@ const defaultBrands = [
 
 interface SectionRendererProps {
   section: HomepageSection;
+  data?: {
+    categories?: Category[];
+    featuredProducts?: Product[];
+    bestsellers?: Product[];
+    brands?: string[];
+  };
+  currencySymbol?: string;
+}
+
+function formatMoney(amount: number, currencySymbol = "Rs.") {
+  const safeAmount = Number(amount || 0);
+  return `${currencySymbol} ${safeAmount.toLocaleString("en-US")}`;
+}
+
+function mapProducts(products: Product[], currencySymbol?: string): ProductCard[] {
+  return products.map((product) => {
+    const price = Number(product.salePrice ?? product.basePrice ?? 0);
+    return {
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: formatMoney(price, currencySymbol),
+      image: product.images?.[0]?.url || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+      rating: typeof product.metadata?.rating === "number" ? product.metadata.rating : undefined,
+    };
+  });
+}
+
+function mapCategories(categories: Category[]) {
+  return categories.map((category) => ({
+    id: category.id,
+    name: category.name,
+    slug: category.slug,
+    href: `/products?categoryId=${category.id}`,
+  }));
 }
 
 function getConfigString(cfg: Record<string, unknown>, keys: string[], fallback: string): string {
@@ -96,7 +132,7 @@ function getConfigBoolean(cfg: Record<string, unknown>, keys: string[], fallback
  * Maps a HomepageSection (from the API) to the corresponding React component.
  * Reads config keys from section.config and passes them as props.
  */
-export default function SectionRenderer({ section }: SectionRendererProps): JSX.Element | null {
+export default function SectionRenderer({ section, data, currencySymbol }: SectionRendererProps): JSX.Element | null {
   const cfg = section.config;
 
   switch (section.type) {
@@ -112,7 +148,7 @@ export default function SectionRenderer({ section }: SectionRendererProps): JSX.
             ["imageUrl", "image", "backgroundImageUrl"],
             "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80"
           )}
-          overlayColor={getConfigString(cfg, ["overlayColor"], "#000000")}
+          overlayColor={getConfigString(cfg, ["overlayColor"], "#0f172a")}
         />
       );
 
@@ -122,6 +158,7 @@ export default function SectionRenderer({ section }: SectionRendererProps): JSX.
       const badge2Fallback = "1 Year Warranty";
       const badge3Fallback = "Easy Returns";
       const badge4Fallback = "Secure Payment";
+      const badge5Fallback = "Best Brands";
 
       return (
         <TrustBadges
@@ -129,6 +166,7 @@ export default function SectionRenderer({ section }: SectionRendererProps): JSX.
           badge2Text={badgeList?.[1] || getConfigString(cfg, ["badge2"], badge2Fallback)}
           badge3Text={badgeList?.[2] || getConfigString(cfg, ["badge3"], badge3Fallback)}
           badge4Text={badgeList?.[3] || getConfigString(cfg, ["badge4"], badge4Fallback)}
+          badge5Text={badgeList?.[4] || getConfigString(cfg, ["badge5"], badge5Fallback)}
         />
       );
 
@@ -143,22 +181,26 @@ export default function SectionRenderer({ section }: SectionRendererProps): JSX.
       );
 
     case "category_strip":
+      const categoryData = data?.categories?.length ? mapCategories(data.categories) : defaultCategories;
       return (
         <ShopByCategory
           sectionTitle={getConfigString(cfg, ["title"], section.label || "Shop by Category")}
           showAllButton={getConfigBoolean(cfg, ["showAll", "showCount"], true)}
           maxCategoriesShown={getConfigNumber(cfg, ["maxVisible", "columns"], 8)}
-          categories={defaultCategories}
+          categories={categoryData}
         />
       );
 
     case "featured_products":
+      const featured = data?.featuredProducts?.length
+        ? mapProducts(data.featuredProducts, currencySymbol)
+        : defaultProducts;
       return (
         <FeaturedProducts
           sectionTitle={getConfigString(cfg, ["title"], section.label || "Featured Products")}
           maxProducts={getConfigNumber(cfg, ["limit"], 8)}
           gridColumns={getConfigNumber(cfg, ["columns"], 4)}
-          products={defaultProducts}
+          products={featured}
         />
       );
 
@@ -176,21 +218,27 @@ export default function SectionRenderer({ section }: SectionRendererProps): JSX.
       );
 
     case "bestsellers":
+      const bestsellers = data?.bestsellers?.length
+        ? mapProducts(data.bestsellers, currencySymbol)
+        : defaultProducts;
       return (
         <Bestsellers
           sectionTitle={getConfigString(cfg, ["title"], section.label || "Our Bestsellers")}
           maxProducts={getConfigNumber(cfg, ["limit"], 6)}
-          products={defaultProducts}
+          products={bestsellers}
         />
       );
 
     case "brand_carousel":
+      const brandList = data?.brands?.length
+        ? data.brands.map((name, index) => ({ id: `b-${index}`, name }))
+        : defaultBrands;
       return (
         <TopBrands
           sectionTitle={getConfigString(cfg, ["title"], section.label || "Top Brands")}
           autoScroll={getConfigBoolean(cfg, ["autoScroll", "autoplay"], true)}
           scrollSpeedMs={getConfigNumber(cfg, ["speed", "scrollSpeedMs"], 3000)}
-          brands={defaultBrands}
+          brands={brandList}
         />
       );
 

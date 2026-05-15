@@ -1,4 +1,16 @@
-const brands = [
+interface BrandItem {
+  id: string;
+  name: string;
+}
+
+interface TopBrandsProps {
+  sectionTitle?: string;
+  brands?: BrandItem[];
+  autoScroll?: boolean;
+  scrollSpeedMs?: number;
+}
+
+const fallbackBrands: BrandItem[] = [
   { id: "b1", name: "Samsung" },
   { id: "b2", name: "Apple" },
   { id: "b3", name: "Sony" },
@@ -11,10 +23,13 @@ const brands = [
   { id: "b10", name: "Microsoft" },
 ];
 
-const TopBrands = () => {
+const TopBrands = ({
+  sectionTitle = "Trusted by Global Brands",
+  brands = fallbackBrands,
+}: TopBrandsProps) => {
   return (
     <section className="rounded-xl bg-white p-6 shadow-sm" aria-label="Top Brands">
-      <h2 className="mb-6 text-2xl font-bold text-slate-900 text-center">Trusted by Global Brands</h2>
+      <h2 className="mb-6 text-2xl font-bold text-slate-900 text-center">{sectionTitle}</h2>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
         {brands.map((brand) => (
           <div

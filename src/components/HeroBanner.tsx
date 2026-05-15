@@ -1,22 +1,37 @@
 import { ChevronRight } from "lucide-react";
-import Navbar from "./Navbar";
-import Header from './Header';
 
-const HeroBanner = () => {
+interface HeroBannerProps {
+  heading?: string;
+  subheading?: string;
+  buttonText?: string;
+  buttonLink?: string;
+  backgroundImageURL?: string;
+  overlayColor?: string;
+}
+
+const HeroBanner = ({
+  heading = "Experience the Future of Tech",
+  subheading = "Upgrade your lifestyle with our exclusive collection of high-performance electronics.",
+  buttonText = "Shop Now",
+  buttonLink = "/products",
+  backgroundImageURL = "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80",
+  overlayColor = "#0f172a",
+}: HeroBannerProps) => {
   return (
     <section className="relative overflow-hidden bg-slate-900" aria-label="Hero Banner">
-      <Header />
-      <Navbar />
       <div className="absolute inset-0 z-0">
         <img
-          src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80"
-          alt="Featured electronics deals"
+          src={backgroundImageURL}
+          alt={heading}
           className="h-full w-full object-cover opacity-60 transition-transform duration-[10s] hover:scale-110"
           loading="eager"
         />
       </div>
 
-      <div className="absolute inset-0 z-10 bg-gradient-to-r from-slate-900 via-slate-900/60 to-transparent" />
+      <div
+        className="absolute inset-0 z-10"
+        style={{ backgroundColor: overlayColor, opacity: 0.7 }}
+      />
 
       <div className="relative z-20 flex min-h-[400px] items-center px-8 md:min-h-[520px] md:px-20">
         <div className="max-w-2xl text-white">
@@ -29,20 +44,17 @@ const HeroBanner = () => {
           </div> */}
 
           <h1 className="mb-6 text-4xl font-black leading-tight md:text-7xl">
-            Experience the <br />
-            <span className="text-brandYellow">Future of Tech</span>
+            {heading}
           </h1>
 
-          <p className="mb-10 max-w-lg text-lg text-slate-300 md:text-xl">
-            Upgrade your lifestyle with our exclusive collection of high-performance electronics.
-          </p>
+          <p className="mb-10 max-w-lg text-lg text-slate-300 md:text-xl">{subheading}</p>
 
           <div className="flex flex-wrap gap-4">
             <a
-              href="/products"
+              href={buttonLink}
               className="group flex h-14 items-center justify-center gap-2 rounded-xl bg-brandYellow px-8 font-bold text-slate-900 text-lg transition-all hover:bg-yellow-400 hover:shadow-lg hover:shadow-yellow-400/20"
             >
-              Shop Now
+              {buttonText}
               <ChevronRight size={20} className="transition-transform group-hover:translate-x-1" />
             </a>
           </div>

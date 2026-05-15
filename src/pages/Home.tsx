@@ -1,92 +1,98 @@
-import { useEffect, useState } from "react";
-import HeroBanner from "../components/HeroBanner";
-import TrustBadges from "../components/TrustBadges";
-import DealBanners from "../components/DealBanners";
-import ShopByCategory from "../components/ShopByCategory";
-import FeaturedProducts from "../components/FeaturedProducts";
-import PromoBanners from "../components/PromoBanners";
-import Bestsellers from "../components/Bestsellers";
-import TopBrands from "../components/TopBrands";
-import Newsletter from "../components/Newsletter";
-import type { HomepageSection } from "../types/homepage";
+import { useEffect, useMemo, useState } from "react";
+import SectionRenderer from "../components/SectionRenderer";
+import { fetchCategories, fetchFeaturedProducts, fetchHomepageSections, fetchProducts } from "../api";
+import type { HomepageSection, Category, Product } from "../types/storefront";
+import { useStorefront } from "../storefront/storefront-context";
 
-// ─── Section registry ────────────────────────────────────────────────────────
-// Add / remove entries here as you add new section types.
-const SECTION_MAP: Record<string, React.ComponentType> = {
-    hero_banner: HeroBanner,
-    trust_badges: TrustBadges,
-    deal_banners: DealBanners,
-    category_strip: ShopByCategory,
-    featured_products: FeaturedProducts,
-    promo_banners: PromoBanners,
-    bestsellers: Bestsellers,
-    brand_carousel: TopBrands,
-    newsletter: Newsletter,
-};
-
-//  Static fallback 
 const FALLBACK_SECTIONS: HomepageSection[] = [
-    { id: "f1", storeId: "aa9e3bda", type: "hero_banner", label: "Hero Banner", isActive: true, sortOrder: 1, config: {}, createdAt: "" },
-    { id: "f2", storeId: "aa9e3bda", type: "trust_badges", label: "Trust Badges", isActive: true, sortOrder: 2, config: {}, createdAt: "" },
-    { id: "f3", storeId: "aa9e3bda", type: "deal_banners", label: "Deal Banners", isActive: true, sortOrder: 3, config: {}, createdAt: "" },
-    { id: "f4", storeId: "aa9e3bda", type: "category_strip", label: "Shop by Category", isActive: true, sortOrder: 4, config: {}, createdAt: "" },
-    { id: "f5", storeId: "aa9e3bda", type: "featured_products", label: "Featured Products", isActive: true, sortOrder: 5, config: {}, createdAt: "" },
-    { id: "f6", storeId: "aa9e3bda", type: "promo_banners", label: "Promo Banners", isActive: true, sortOrder: 6, config: {}, createdAt: "" },
-    { id: "f7", storeId: "aa9e3bda", type: "bestsellers", label: "Bestsellers", isActive: true, sortOrder: 7, config: {}, createdAt: "" },
-    { id: "f8", storeId: "aa9e3bda", type: "brand_carousel", label: "Top Brands", isActive: true, sortOrder: 8, config: {}, createdAt: "" },
-    { id: "f9", storeId: "aa9e3bda", type: "newsletter", label: "Newsletter", isActive: true, sortOrder: 9, config: {}, createdAt: "" },
+    { id: "f1", storeId: "techmart", type: "hero_banner", label: "Hero Banner", isActive: true, sortOrder: 1, config: {}, createdAt: "" },
+    { id: "f2", storeId: "techmart", type: "trust_badges", label: "Trust Badges", isActive: true, sortOrder: 2, config: {}, createdAt: "" },
+    { id: "f3", storeId: "techmart", type: "deal_banners", label: "Deal Banners", isActive: true, sortOrder: 3, config: {}, createdAt: "" },
+    { id: "f4", storeId: "techmart", type: "category_strip", label: "Shop by Category", isActive: true, sortOrder: 4, config: {}, createdAt: "" },
+    { id: "f5", storeId: "techmart", type: "featured_products", label: "Featured Products", isActive: true, sortOrder: 5, config: {}, createdAt: "" },
+    { id: "f6", storeId: "techmart", type: "promo_banners", label: "Promo Banners", isActive: true, sortOrder: 6, config: {}, createdAt: "" },
+    { id: "f7", storeId: "techmart", type: "bestsellers", label: "Bestsellers", isActive: true, sortOrder: 7, config: {}, createdAt: "" },
+    { id: "f8", storeId: "techmart", type: "brand_carousel", label: "Top Brands", isActive: true, sortOrder: 8, config: {}, createdAt: "" },
+    { id: "f9", storeId: "techmart", type: "newsletter", label: "Newsletter", isActive: true, sortOrder: 9, config: {}, createdAt: "" },
 ];
 
-//  Fetch helper 
-async function fetchSections(): Promise<HomepageSection[]> {
-    // enter API 
-    const res = await fetch("http://localhost:3001/api/storefront/homepage/sections?storeId=aa9e3bda-60d3-4b10-be5f-2685e15c7f1b");
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
-    return res.json() as Promise<HomepageSection[]>;
-
-    // Simulation // comment this
-    //return Promise.resolve(FALLBACK_SECTIONS);
-}
-
-//  Component 
 export default function Home() {
+    const { config } = useStorefront();
     const [sections, setSections] = useState<HomepageSection[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+    const [bestsellers, setBestsellers] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         let cancelled = false;
 
-        fetchSections()
-            .then((data) => {
-                if (!cancelled) setSections(data);
-            })
-            .catch((err) => {
-                console.error("Failed to load homepage sections, using fallback.", err);
-                if (!cancelled) setSections(FALLBACK_SECTIONS);
-            })
-            .finally(() => {
-                if (!cancelled) setLoading(false);
-            });
+        const load = async () => {
+            setLoading(true);
 
-        // Ignore the result if the component unmounts mid-fetch
-        return () => { cancelled = true; };
+            const [sectionResult, categoryResult, featuredResult, bestsellerResult] = await Promise.allSettled([
+                fetchHomepageSections(),
+                fetchCategories(),
+                fetchFeaturedProducts(10),
+                fetchProducts({ limit: 10, sortBy: "sortOrder", sortOrder: "ASC" }),
+            ]);
+
+            if (cancelled) return;
+
+            if (sectionResult.status === "fulfilled") {
+                setSections(sectionResult.value);
+            } else {
+                console.error("Failed to load homepage sections", sectionResult.reason);
+                setSections(FALLBACK_SECTIONS);
+            }
+
+            if (categoryResult.status === "fulfilled") {
+                setCategories(categoryResult.value);
+            }
+
+            if (featuredResult.status === "fulfilled") {
+                setFeaturedProducts(featuredResult.value);
+            }
+
+            if (bestsellerResult.status === "fulfilled") {
+                setBestsellers(bestsellerResult.value.data);
+            }
+
+            setLoading(false);
+        };
+
+        void load();
+
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
-    const visibleSections = sections
-        .filter((s) => s.isActive)
-        .sort((a, b) => a.sortOrder - b.sortOrder);
+    const visibleSections = useMemo(() => {
+        return sections.filter((section) => section.isActive).sort((a, b) => a.sortOrder - b.sortOrder);
+    }, [sections]);
 
     if (loading) {
         return <div className="min-h-screen bg-[#f6f6f6]" aria-busy="true" />;
     }
 
-
     return (
         <div className="min-h-screen bg-[#f6f6f6]">
             {visibleSections.map((section) => {
-                const Component = SECTION_MAP[section.type];
-                if (!Component) return null;
-                return <Component key={section.id} />;
+                const isHero = section.type === "hero_banner";
+                return (
+                    <div key={section.id} className={isHero ? "" : "mx-auto w-full max-w-7xl px-6 py-6"}>
+                        <SectionRenderer
+                            section={section}
+                            currencySymbol={config?.currencySymbol || undefined}
+                            data={{
+                                categories,
+                                featuredProducts,
+                                bestsellers,
+                            }}
+                        />
+                    </div>
+                );
             })}
         </div>
     );

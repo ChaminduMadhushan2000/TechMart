@@ -1,24 +1,38 @@
-import { SearchIcon } from 'lucide-react';
-import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { SearchIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { fetchNavigation } from "../api";
+import type { NavigationItem } from "../types/storefront";
 
 const Navbar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchFocused, setIsSearchFocused] = useState(false);
 
-    const navItems = [
-        { name: 'Home', path: '/' },
-        { name: 'TV & Audio', path: '/products?category=tv-audio' },
-        { name: 'Smart Phones', path: '/products?category=smartphones' },
-        { name: 'Laptops & Desktops', path: '/products?category=laptops' },
-        { name: 'Games', path: '/products?category=gadgets' },
-        { name: 'Cameras', path: '/products?category=cameras' },
-    ];
+    const navigate = useNavigate();
+    const [navItems, setNavItems] = useState<NavigationItem[]>([
+        { label: "Home", href: "/" },
+        { label: "TV & Audio", href: "/products?category=tv-audio" },
+        { label: "Smart Phones", href: "/products?category=smartphones" },
+        { label: "Laptops", href: "/products?category=laptops" },
+        { label: "Gaming", href: "/products?category=gaming" },
+        { label: "Cameras", href: "/products?category=cameras" },
+    ]);
+
+    useEffect(() => {
+        fetchNavigation("header")
+            .then((menu) => {
+                if (menu?.items?.length) setNavItems(menu.items);
+            })
+            .catch((err) => console.error("Failed to load navigation", err));
+    }, []);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         // handle search logic here
-        console.log('Search:', searchQuery);
+        const query = searchQuery.trim();
+        if (query) {
+            navigate(`/products?search=${encodeURIComponent(query)}`);
+        }
     };
 
     return (
@@ -28,17 +42,17 @@ const Navbar = () => {
                 <div className="flex items-center gap-8 ml-2 text-sm font-bold uppercase tracking-wider">
                     {navItems.map((item) => (
                         <NavLink
-                            key={item.path}
-                            to={item.path}
-                            end={item.path === '/'}
+                            key={item.href}
+                            to={item.href}
+                            end={item.href === "/"}
                             className={({ isActive }) =>
                                 `transition-colors whitespace-nowrap ${isActive
-                                    ? 'text-brandPrimary underline underline-offset-4'
-                                    : 'hover:text-brandPrimary'
+                                    ? "text-brandPrimary underline underline-offset-4"
+                                    : "hover:text-brandPrimary"
                                 }`
                             }
                         >
-                            {item.name}
+                            {item.label}
                         </NavLink>
                     ))}
                 </div>
