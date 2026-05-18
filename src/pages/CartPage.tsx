@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchCart, removeCartItem, updateCartItem } from "../api";
-import type { CartSummary } from "../types/storefront";
 import { useStorefront } from "../storefront/storefront-context";
+import { useCartStore } from "../store/cart-store";
 
 function formatMoney(amount: number, currencySymbol = "Rs.") {
   const safeAmount = Number(amount || 0);
@@ -11,29 +9,22 @@ function formatMoney(amount: number, currencySymbol = "Rs.") {
 
 export default function CartPage() {
   const { config } = useStorefront();
-  const [cart, setCart] = useState<CartSummary | null>(null);
-  const [loading, setLoading] = useState(true);
+  const cart = useCartStore((state) => state.cart);
 
-  const loadCart = async () => {
-    setLoading(true);
-    const data = await fetchCart();
-    setCart(data);
-    setLoading(false);
-  };
+  const loading = useCartStore(
+    (state) => state.loading
+  );
 
-  useEffect(() => {
-    void loadCart();
-  }, []);
+  const updateItem = useCartStore(
+    (state) => state.updateItem
+  );
 
-  const handleUpdate = async (itemId: string, quantity: number) => {
-    const data = await updateCartItem(itemId, quantity);
-    setCart(data);
-  };
+  const removeItem = useCartStore(
+    (state) => state.removeItem
+  );
+  
 
-  const handleRemove = async (itemId: string) => {
-    const data = await removeCartItem(itemId);
-    setCart(data);
-  };
+
 
   if (loading || !cart) {
     return (
@@ -75,12 +66,12 @@ export default function CartPage() {
                     type="number"
                     min={1}
                     value={item.quantity}
-                    onChange={(event) => handleUpdate(item.id, Math.max(1, Number(event.target.value)))}
+                    onChange={(event) => updateItem(item.id,Math.max(1, Number(event.target.value)))}
                     className="h-10 w-20 rounded-lg border border-slate-200 px-3 text-sm"
                   />
                   <button
                     type="button"
-                    onClick={() => handleRemove(item.id)}
+                    onClick={() => removeItem(item.id)}
                     className="text-xs font-semibold text-red-500"
                   >
                     Remove

@@ -1,4 +1,5 @@
 import { ShoppingCart, Star } from "lucide-react";
+import { useCartStore } from "../store/cart-store";
 
 export interface ProductCard {
   id: string;
@@ -30,6 +31,10 @@ const FeaturedProducts = ({
         ? "grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
         : "grid-cols-1 gap-6 sm:grid-cols-2";
 
+  const addItem = useCartStore(
+    (state) => state.addItem
+  );
+
   return (
     <section className="rounded-xl bg-white p-6 shadow-sm" aria-label="Featured Products">
       <div className="mb-6 flex items-center justify-between">
@@ -52,7 +57,9 @@ const FeaturedProducts = ({
                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                 loading="lazy"
               />
-              <button className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition-colors hover:bg-brandYellow">
+              <button 
+                onClick={() => addItem(product.id, 1)}
+                className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition-colors hover:bg-brandYellow">
                 <ShoppingCart size={20} className="text-slate-700" />
               </button>
             </div>

@@ -10,10 +10,22 @@ import {
   RegisterPage,
   AccountPage,
 } from "./pages";
+import { Toaster } from "react-hot-toast";
+import { useCartStore } from "./store/cart-store";
+import { useEffect } from "react";
 
 export default function App() {
+  const loadCart = useCartStore(
+    (state) => state.loadCart
+  );
+
+  useEffect(() => {
+    void loadCart();
+  }, [loadCart]);
   return (
     <BrowserRouter>
+    <>
+    <Toaster position="top-right" />
       <Routes>
         <Route element={<SiteLayout />}>
           <Route path="/" element={<Home />} />
@@ -26,6 +38,7 @@ export default function App() {
           <Route path="/account" element={<AccountPage />} />
         </Route>
       </Routes>
+    </>
     </BrowserRouter>
   );
 }
