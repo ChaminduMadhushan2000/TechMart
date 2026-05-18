@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { addToCart, fetchProductBySlug } from "../api";
 import type { Product } from "../types/storefront";
 import { useStorefront } from "../storefront/storefront-context";
+import { fetchProductBySlug } from "../api";
+import { useCartStore } from "../store/cart-store";
 
 function formatMoney(amount: number, currencySymbol = "Rs.") {
   const safeAmount = Number(amount || 0);
@@ -23,6 +24,9 @@ export default function ProductDetailPage() {
   const [selectedVariant, setSelectedVariant] = useState<string | undefined>(undefined);
   const [adding, setAdding] = useState(false);
 
+  const addItem = useCartStore(
+    (state) => state.addItem
+  );
   useEffect(() => {
     if (!slug) return;
     let cancelled = false;
@@ -57,15 +61,15 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = async () => {
     if (!product) return;
-    setAdding(true);
+
     try {
-      await addToCart({
-        productId: product.id,
-        variantId: selectedVariant,
+      setAdding(true);
+
+      await addItem(
+        product.id,
         quantity,
-      });
-    } catch (err) {
-      console.error("Failed to add to cart", err);
+        selectedVariant
+      );
     } finally {
       setAdding(false);
     }
