@@ -15,10 +15,32 @@ import type {
 } from "./types/storefront";
 import { getActiveCustomerId, getAuthToken, setCustomerAuth } from "./storefront/customer";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api";
-const STORE_ID_OVERRIDE = import.meta.env.VITE_STORE_ID || "";
-const STORE_DOMAIN_OVERRIDE = import.meta.env.VITE_STORE_DOMAIN || "";
-const DEFAULT_STORE_DOMAIN = "techmart.com";
+const STORE_ID_OVERRIDE = (import.meta.env.VITE_STORE_ID || "").trim();
+const STORE_DOMAIN_OVERRIDE = (import.meta.env.VITE_STORE_DOMAIN || "").trim();
+
+function resolveApiBaseUrl(): string {
+  const rawValue = import.meta.env.VITE_API_BASE_URL;
+  if (!rawValue) {
+    throw new Error("VITE_API_BASE_URL is required for the storefront.");
+  }
+
+  const value = rawValue.trim().replace(/\/$/, "");
+  let parsed: URL;
+
+  try {
+    parsed = new URL(value);
+  } catch (error) {
+    throw new Error("VITE_API_BASE_URL must be a valid URL.");
+  }
+
+  if (import.meta.env.PROD && parsed.protocol !== "https:") {
+    throw new Error("VITE_API_BASE_URL must use https in production.");
+  }
+
+  return value;
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -37,13 +59,13 @@ api.interceptors.request.use((config) => {
 let storeConfigCache: StorefrontConfig | null = null;
 let storeConfigPromise: Promise<StorefrontConfig> | null = null;
 
-function resolveStoreDomain(): string {
+function resolveStoreDomain(): string | null {
   if (STORE_DOMAIN_OVERRIDE) return STORE_DOMAIN_OVERRIDE;
   if (typeof window !== "undefined") {
     const host = window.location.hostname;
     if (host && host !== "localhost") return host;
   }
-  return DEFAULT_STORE_DOMAIN;
+  return null;
 }
 
 async function fetchStoreConfigByDomain(domain: string): Promise<StorefrontConfig> {
@@ -59,23 +81,28 @@ export async function resolveStoreConfig(): Promise<StorefrontConfig> {
 
   storeConfigPromise = (async () => {
     const domain = resolveStoreDomain();
-    try {
-      return await fetchStoreConfigByDomain(domain);
-    } catch (error) {
-      if (domain !== DEFAULT_STORE_DOMAIN) {
-        return fetchStoreConfigByDomain(DEFAULT_STORE_DOMAIN);
+
+    if (domain) {
+      try {
+        return await fetchStoreConfigByDomain(domain);
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : "Unknown error";
+        throw new Error(`Store config not found for domain "${domain}". ${detail}`);
       }
-      if (STORE_ID_OVERRIDE) {
-        return {
-          id: STORE_ID_OVERRIDE,
-          name: "Storefront",
-          domain,
-          type: "general",
-          checkoutMode: "cart",
-        } as StorefrontConfig;
-      }
-      throw error;
     }
+
+    if (STORE_ID_OVERRIDE) {
+      const fallbackDomain = STORE_DOMAIN_OVERRIDE || (typeof window !== "undefined" ? window.location.hostname : "localhost");
+      return {
+        id: STORE_ID_OVERRIDE,
+        name: "Storefront",
+        domain: fallbackDomain,
+        type: "general",
+        checkoutMode: "cart",
+      } as StorefrontConfig;
+    }
+
+    throw new Error("Store context missing. Set VITE_STORE_DOMAIN or VITE_STORE_ID for localhost.");
   })();
 
   try {
