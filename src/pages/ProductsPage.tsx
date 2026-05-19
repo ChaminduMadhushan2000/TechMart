@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { fetchCategories, fetchProducts } from "../api";
 import type { Category, Product } from "../types/storefront";
 import { useStorefront } from "../storefront/storefront-context";
+import StockBadge from "../components/products/StockBadge";
 
 const sortOptions = [
   { value: "newest", label: "Newest" },
@@ -222,6 +223,16 @@ export default function ProductsPage() {
                 <Link to={`/products/${product.slug}`} className="line-clamp-2 text-sm font-semibold text-slate-800 hover:text-brandPrimary">
                   {product.name}
                 </Link>
+
+                <div className="flex items-center justify-between">
+                  <StockBadge stock={product.stockQuantity || 0} />
+
+                  {(product.stockQuantity || 0) > 0 && (
+                    <span className="text-xs text-slate-500">
+                      {product.stockQuantity} left
+                    </span>
+                  )}
+                </div>
                 <div className="text-lg font-black text-slate-900">
                   {formatMoney(getProductPrice(product), config?.currencySymbol || undefined)}
                 </div>

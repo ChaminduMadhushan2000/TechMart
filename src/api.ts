@@ -135,6 +135,7 @@ export async function fetchCategories(storeId?: string): Promise<Category[]> {
   return res.data;
 }
 
+//TODO :Setup in backend
 export interface ProductFilters {
   categoryId?: string;
   search?: string;

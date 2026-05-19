@@ -49,10 +49,12 @@ export interface ProductAttribute {
   group?: string | null;
 }
 
+//TODO : Update Backend
 export interface Product {
   id: string;
   name: string;
   brand: string | null;
+  stockQuantity: number;
   slug: string;
   description?: string | null;
   basePrice: number;

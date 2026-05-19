@@ -1,11 +1,13 @@
 import { ShoppingCart, Star } from "lucide-react";
 import { useCartStore } from "../store/cart-store";
+import StockBadge from "./products/StockBadge";
 
 export interface ProductCard {
   id: string;
   name: string;
   price: string;
   image: string;
+  stock?: number;
   rating?: number;
   slug?: string;
 }
@@ -59,7 +61,8 @@ const FeaturedProducts = ({
               />
               <button 
                 onClick={() => addItem(product.id, 1)}
-                className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition-colors hover:bg-brandYellow">
+                disabled={(product.stock || 0) <= 0}
+                className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition-colors hover:bg-brandYellow disabled:cursor-not-allowed disabled:opacity-50">
                 <ShoppingCart size={20} className="text-slate-700" />
               </button>
             </div>
@@ -77,6 +80,10 @@ const FeaturedProducts = ({
                   {product.name}
                 </a>
               </h3>
+
+              <div className="mb-3">
+                <StockBadge stock={product.stock || 0} />
+              </div>
 
               <div className="mt-auto flex items-center justify-between">
                 <p className="text-lg font-black text-slate-900">{product.price}</p>

@@ -4,6 +4,8 @@ import type { Product } from "../types/storefront";
 import { useStorefront } from "../storefront/storefront-context";
 import { fetchProductBySlug } from "../api";
 import { useCartStore } from "../store/cart-store";
+import StockBadge from "../components/products/StockBadge";
+import { getStockStatus } from "../utils/stock";
 
 function formatMoney(amount: number, currencySymbol = "LKR.") {
   const safeAmount = Number(amount || 0);
@@ -91,6 +93,8 @@ export default function ProductDetailPage() {
     );
   }
 
+  const stockStatus = getStockStatus(product.stockQuantity || 0);
+
   return (
     <section className="mx-auto w-full max-w-6xl px-6 py-10">
       <div className="mb-6 text-sm text-slate-500">
@@ -129,6 +133,15 @@ export default function ProductDetailPage() {
               {formatMoney(getProductPrice(product), config?.currencySymbol || undefined)}
             </p>
           </div>
+          <div className="mt-3 flex items-center gap-3">
+            <StockBadge stock={product.stockQuantity || 0} />
+
+            {product.stockQuantity > 0 && (
+              <span className="text-sm text-slate-500">
+                {product.stockQuantity} items available
+              </span>
+            )}
+          </div>
 
           {product.description ? (
             <p className="text-slate-600">{product.description}</p>
@@ -165,10 +178,14 @@ export default function ProductDetailPage() {
           <button
             type="button"
             onClick={handleAddToCart}
-            disabled={adding}
-            className="h-12 w-full rounded-xl bg-brandYellow text-sm font-black text-slate-900 transition-all hover:bg-yellow-400 disabled:opacity-60"
+            disabled={adding || !stockStatus.canPurchase}
+            className="h-12 w-full rounded-xl bg-brandYellow text-sm font-black text-slate-900 transition-all hover:bg-yellow-400 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {adding ? "Adding..." : "Add to cart"}
+            {adding
+              ? "Adding..."
+              : !stockStatus.canPurchase
+                ? "Out of Stock"
+                : "Add to cart"}
           </button>
         </div>
       </div>
