@@ -52,6 +52,7 @@ export interface ProductAttribute {
 export interface Product {
   id: string;
   name: string;
+  brand: string | null;
   slug: string;
   description?: string | null;
   basePrice: number;

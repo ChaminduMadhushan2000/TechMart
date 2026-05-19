@@ -54,10 +54,19 @@ export default function ProductsPage() {
   const search = searchParams.get("search") || "";
   const sort = searchParams.get("sort") || "newest";
   const page = Number(searchParams.get("page") || "1");
+  const brand = searchParams.get("brand") || "";
 
   const categoryOptions = useMemo(() => {
     return flattenCategories(categories).filter((cat) => cat.isActive !== false);
   }, [categories]);
+
+  const brandOptions = useMemo(() => {
+    const brands = products
+      .map((product) => product.brand)
+      .filter((brand): brand is string => Boolean(brand));
+
+    return [...new Set(brands)];
+  }, [products]);
 
   const slugToId = useMemo(() => {
     const mapping: Record<string, string> = {};
@@ -74,11 +83,12 @@ export default function ProductsPage() {
     return {
       categoryId: resolvedCategoryId || undefined,
       search: search || undefined,
+      brand: brand || undefined,
       page,
       limit: 12,
       ...sortConfig,
     };
-  }, [resolvedCategoryId, search, sort, page]);
+  }, [resolvedCategoryId, search, brand, sort, page]);
 
   useEffect(() => {
     let cancelled = false;
@@ -160,6 +170,19 @@ export default function ProductsPage() {
             {categoryOptions.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.name}
+              </option>
+            ))}
+          </select>
+          <select
+            value={brand}
+            onChange={(event) => setParam("brand", event.target.value)}
+            className="h-10 rounded-full border border-slate-200 bg-white px-4 text-sm outline-none focus:border-brandYellow"
+          >
+            <option value="">All brands</option>
+
+            {brandOptions.map((brandName) => (
+              <option key={brandName} value={brandName}>
+                {brandName}
               </option>
             ))}
           </select>

@@ -138,6 +138,7 @@ export async function fetchCategories(storeId?: string): Promise<Category[]> {
 export interface ProductFilters {
   categoryId?: string;
   search?: string;
+  brand?: string;
   minPrice?: number;
   maxPrice?: number;
   isFeatured?: boolean;
