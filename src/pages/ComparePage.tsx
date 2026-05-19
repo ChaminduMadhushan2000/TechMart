@@ -5,10 +5,6 @@ import { useCompareStore } from "../store/compare-store";
 export default function ComparePage() {
   const products = useCompareStore((state) => state.products);
 
-  
-
-  console.log("ComparePage render, products in compare:", products);
-
   if (products.length < 2) {
     return (
       <section className="mx-auto max-w-5xl px-6 py-10">

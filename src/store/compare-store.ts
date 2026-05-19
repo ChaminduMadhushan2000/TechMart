@@ -14,7 +14,7 @@ export const useCompareStore = create<CompareStore>((set) => ({
 
   addProduct: (product) =>
     set((state) => {
-      //console.log("Adding product to compare:", product)
+
       const exists = state.products.some((p) => p.id === product.id);
 
       if (exists) {
