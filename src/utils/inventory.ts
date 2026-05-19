@@ -6,7 +6,7 @@ export type InventoryValidationResult = {
 };
 
 export function validateCartInventory(
-  cart: CartSummary
+  cart: CartSummary,
 ): InventoryValidationResult {
 
   for (const item of cart.items) {
@@ -34,9 +34,9 @@ export function validateCartInventory(
 
 export function validatePurchaseQuantity(
   quantity: number,
-  stock: number
+  stock: number,
 ): InventoryValidationResult {
-
+    
   if (stock <= 0) {
     return {
       valid: false,

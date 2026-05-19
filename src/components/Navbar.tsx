@@ -16,6 +16,7 @@ const Navbar = () => {
         { label: "Laptops", href: "/products?category=laptops" },
         { label: "Gaming", href: "/products?category=gaming" },
         { label: "Cameras", href: "/products?category=cameras" },
+        { label: "Compare Products", href: "/compare" },
     ]);
 
     useEffect(() => {

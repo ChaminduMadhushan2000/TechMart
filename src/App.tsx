@@ -13,6 +13,7 @@ import {
 import { Toaster } from "react-hot-toast";
 import { useCartStore } from "./store/cart-store";
 import { useEffect } from "react";
+import ComparePage from "./pages/ComparePage";
 
 export default function App() {
   const loadCart = useCartStore(
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/account" element={<AccountPage />} />
+          <Route path="/compare" element={<ComparePage />} />
         </Route>
       </Routes>
     </>

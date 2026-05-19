@@ -6,6 +6,7 @@ import { fetchProductBySlug } from "../api";
 import { useCartStore } from "../store/cart-store";
 import StockBadge from "../components/products/StockBadge";
 import { getStockStatus } from "../utils/stock";
+import CompareButton from "../components/compare/CompareButton";
 
 function formatMoney(amount: number, currencySymbol = "LKR.") {
   const safeAmount = Number(amount || 0);
@@ -23,12 +24,12 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [selectedVariant, setSelectedVariant] = useState<string | undefined>(undefined);
+  const [selectedVariant, setSelectedVariant] = useState<string | undefined>(
+    undefined,
+  );
   const [adding, setAdding] = useState(false);
 
-  const addItem = useCartStore(
-    (state) => state.addItem
-  );
+  const addItem = useCartStore((state) => state.addItem);
   useEffect(() => {
     if (!slug) return;
     let cancelled = false;
@@ -38,11 +39,16 @@ export default function ProductDetailPage() {
       .then((data) => {
         if (cancelled) return;
         setProduct(data);
-        const firstVariant = data.variants?.find((variant) => variant.isActive !== false);
+        const firstVariant = data.variants?.find(
+          (variant) => variant.isActive !== false,
+        );
         setSelectedVariant(firstVariant?.id);
       })
       .catch((err) => {
-        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load product");
+        if (!cancelled)
+          setError(
+            err instanceof Error ? err.message : "Failed to load product",
+          );
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -54,11 +60,16 @@ export default function ProductDetailPage() {
   }, [slug]);
 
   const primaryImage = useMemo(() => {
-    return product?.images?.find((image) => image.isPrimary)?.url || product?.images?.[0]?.url;
+    return (
+      product?.images?.find((image) => image.isPrimary)?.url ||
+      product?.images?.[0]?.url
+    );
   }, [product]);
 
   const variantOptions = useMemo(() => {
-    return product?.variants?.filter((variant) => variant.isActive !== false) || [];
+    return (
+      product?.variants?.filter((variant) => variant.isActive !== false) || []
+    );
   }, [product]);
 
   const handleAddToCart = async () => {
@@ -67,11 +78,7 @@ export default function ProductDetailPage() {
     try {
       setAdding(true);
 
-      await addItem(
-        product.id,
-        quantity,
-        selectedVariant
-      );
+      await addItem(product.id, quantity, selectedVariant);
     } finally {
       setAdding(false);
     }
@@ -80,7 +87,9 @@ export default function ProductDetailPage() {
   if (loading) {
     return (
       <section className="mx-auto w-full max-w-6xl px-6 py-10">
-        <div className="rounded-xl bg-white p-8 text-sm text-slate-500">Loading product...</div>
+        <div className="rounded-xl bg-white p-8 text-sm text-slate-500">
+          Loading product...
+        </div>
       </section>
     );
   }
@@ -88,7 +97,9 @@ export default function ProductDetailPage() {
   if (error || !product) {
     return (
       <section className="mx-auto w-full max-w-6xl px-6 py-10">
-        <div className="rounded-xl bg-white p-8 text-sm text-red-600">{error || "Product not found"}</div>
+        <div className="rounded-xl bg-white p-8 text-sm text-red-600">
+          {error || "Product not found"}
+        </div>
       </section>
     );
   }
@@ -98,16 +109,24 @@ export default function ProductDetailPage() {
   return (
     <section className="mx-auto w-full max-w-6xl px-6 py-10">
       <div className="mb-6 text-sm text-slate-500">
-        <Link to="/" className="hover:text-brandPrimary">Home</Link> /{" "}
-        <Link to="/products" className="hover:text-brandPrimary">Products</Link> /{" "}
-        <span className="text-slate-700">{product.name}</span>
+        <Link to="/" className="hover:text-brandPrimary">
+          Home
+        </Link>{" "}
+        /{" "}
+        <Link to="/products" className="hover:text-brandPrimary">
+          Products
+        </Link>{" "}
+        / <span className="text-slate-700">{product.name}</span>
       </div>
 
       <div className="grid gap-10 lg:grid-cols-2">
         <div className="space-y-4">
           <div className="overflow-hidden rounded-2xl bg-slate-100">
             <img
-              src={primaryImage || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"}
+              src={
+                primaryImage ||
+                "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"
+              }
               alt={product.name}
               className="h-96 w-full object-cover"
             />
@@ -128,9 +147,14 @@ export default function ProductDetailPage() {
 
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-black text-slate-900">{product.name}</h1>
+            <h1 className="text-3xl font-black text-slate-900">
+              {product.name}
+            </h1>
             <p className="mt-2 text-lg font-bold text-brandPrimary">
-              {formatMoney(getProductPrice(product), config?.currencySymbol || undefined)}
+              {formatMoney(
+                getProductPrice(product),
+                config?.currencySymbol || undefined,
+              )}
             </p>
           </div>
           <div className="mt-3 flex items-center gap-3">
@@ -146,10 +170,13 @@ export default function ProductDetailPage() {
           {product.description ? (
             <p className="text-slate-600">{product.description}</p>
           ) : null}
+          <CompareButton product={product} />
 
           {variantOptions.length ? (
             <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">Choose variant</label>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                Choose variant
+              </label>
               <select
                 value={selectedVariant}
                 onChange={(event) => setSelectedVariant(event.target.value)}
@@ -157,7 +184,11 @@ export default function ProductDetailPage() {
               >
                 {variantOptions.map((variant) => (
                   <option key={variant.id} value={variant.id}>
-                    {variant.name} - {formatMoney(variant.price, config?.currencySymbol || undefined)}
+                    {variant.name} -{" "}
+                    {formatMoney(
+                      variant.price,
+                      config?.currencySymbol || undefined,
+                    )}
                   </option>
                 ))}
               </select>
@@ -170,7 +201,9 @@ export default function ProductDetailPage() {
               type="number"
               min={1}
               value={quantity}
-              onChange={(event) => setQuantity(Math.max(1, Number(event.target.value)))}
+              onChange={(event) =>
+                setQuantity(Math.max(1, Number(event.target.value)))
+              }
               className="h-12 w-24 rounded-xl border border-slate-200 px-3 text-sm"
             />
           </div>
