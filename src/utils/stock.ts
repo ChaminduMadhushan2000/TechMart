@@ -5,7 +5,7 @@ export type StockStatus = {
 };
 
 export function getStockStatus(stock: number): StockStatus {
-  if (stock <= 0) {
+  if (stock === 0) {
     return {
       label: "Out of Stock",
       className: "bg-red-100 text-red-700",
@@ -15,7 +15,7 @@ export function getStockStatus(stock: number): StockStatus {
 
   if (stock <= 10) {
     return {
-      label: "Low Stock",
+      label: `Only ${stock} left`,
       className: "bg-yellow-100 text-yellow-700",
       canPurchase: true,
     };

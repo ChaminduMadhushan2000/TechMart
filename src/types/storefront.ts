@@ -108,6 +108,7 @@ export interface CartLineProduct {
   name: string;
   slug: string;
   image?: string | null;
+  stockQuantity?: number;
 }
 
 export interface CartLineVariant {

@@ -11,6 +11,7 @@ import {
 import type { CartSummary, CouponValidation, PaymentMethod } from "../types/storefront";
 import { useStorefront } from "../storefront/storefront-context";
 import { getActiveCustomerId } from "../storefront/customer";
+import { validateCartInventory } from "../utils/inventory";
 
 function formatMoney(amount: number, currencySymbol = "LKR.") {
   const safeAmount = Number(amount || 0);
@@ -27,6 +28,9 @@ export default function CheckoutPage() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [selectedPayment, setSelectedPayment] = useState<string | null>(null);
   const [placingOrder, setPlacingOrder] = useState(false);
+  const [inventoryError, setInventoryError] = useState<string | null>(null);
+
+  const inventoryValidation = cart ? validateCartInventory(cart) : { valid: false };
 
   const [form, setForm] = useState({
     name: "",
@@ -77,6 +81,14 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     if (!cart) return;
+    const inventoryCheck = validateCartInventory(cart);
+
+    if (!inventoryCheck.valid) {
+      setInventoryError(inventoryCheck.message || "Inventory validation failed");
+      return;
+    }
+
+    setInventoryError(null);
     setPlacingOrder(true);
     try {
       const order = await createOrder({
@@ -240,9 +252,15 @@ export default function CheckoutPage() {
             </div>
           </div>
 
+          {inventoryError ? (
+            <div className="mt-4 rounded-lg bg-red-100 px-4 py-3 text-sm text-red-700">
+              {inventoryError}
+            </div>
+          ) : null}
+
           <button
             type="button"
-            disabled={!canPlaceOrder || placingOrder}
+            disabled={!canPlaceOrder || placingOrder || !inventoryValidation.valid}
             onClick={handlePlaceOrder}
             className="mt-6 flex h-12 w-full items-center justify-center rounded-xl bg-brandYellow text-sm font-black text-slate-900 disabled:opacity-60"
           >

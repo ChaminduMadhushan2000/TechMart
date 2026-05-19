@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { useStorefront } from "../storefront/storefront-context";
 import { useCartStore } from "../store/cart-store";
+import { validatePurchaseQuantity } from "../utils/inventory";
+import toast from "react-hot-toast";
 
 function formatMoney(amount: number, currencySymbol = "LKR.") {
   const safeAmount = Number(amount || 0);
@@ -22,8 +24,22 @@ export default function CartPage() {
   const removeItem = useCartStore(
     (state) => state.removeItem
   );
-  
 
+  
+  const handleQuantityChange = (
+    itemId: string,
+    quantity: number,
+    stock: number
+  ) => {
+    const validation = validatePurchaseQuantity(quantity, stock);
+
+    if (!validation.valid) {
+      toast.error(validation.message || "Invalid quantity");
+      return;
+    }
+
+    updateItem(itemId, quantity);
+  };
 
 
   if (loading || !cart) {
@@ -65,8 +81,13 @@ export default function CartPage() {
                   <input
                     type="number"
                     min={1}
+                    max={item.product?.stockQuantity || 1}
                     value={item.quantity}
-                    onChange={(event) => updateItem(item.id,Math.max(1, Number(event.target.value)))}
+                    onChange={(event) => handleQuantityChange(
+                                item.id,
+                                Math.max(1, Number(event.target.value)),
+                                item.product?.stockQuantity || 0
+                              )}
                     className="h-10 w-20 rounded-lg border border-slate-200 px-3 text-sm"
                   />
                   <button
