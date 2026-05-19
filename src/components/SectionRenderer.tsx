@@ -56,7 +56,7 @@ interface SectionRendererProps {
   currencySymbol?: string;
 }
 
-function formatMoney(amount: number, currencySymbol = "Rs.") {
+function formatMoney(amount: number, currencySymbol = "LKR.") {
   const safeAmount = Number(amount || 0);
   return `${currencySymbol} ${safeAmount.toLocaleString("en-US")}`;
 }
@@ -140,7 +140,7 @@ export default function SectionRenderer({ section, data, currencySymbol }: Secti
       return (
         <HeroBanner
           heading={getConfigString(cfg, ["title", "heading"], "Best Tech Deals")}
-          subheading={getConfigString(cfg, ["subtitle", "subheading"], "Free delivery over Rs. 5,000")}
+          subheading={getConfigString(cfg, ["subtitle", "subheading"], "Free delivery over LKR. 5,000")}
           buttonText={getConfigString(cfg, ["cta", "ctaText"], "Shop Now")}
           buttonLink={getConfigString(cfg, ["ctaLink"], "/products")}
           backgroundImageURL={getConfigString(
@@ -247,7 +247,7 @@ export default function SectionRenderer({ section, data, currencySymbol }: Secti
         <Newsletter
           heading={getConfigString(cfg, ["title", "heading"], "Stay in the Loop")}
           subtext={getConfigString(cfg, ["subtitle", "subtext"], "Get exclusive deals and new arrivals")}
-          incentive={getConfigString(cfg, ["incentive"], "Rs. 1,000 off your first order")}
+          incentive={getConfigString(cfg, ["incentive"], "LKR. 1,000 off your first order")}
           buttonText={getConfigString(cfg, ["btnText", "buttonText"], "Subscribe")}
         />
       );

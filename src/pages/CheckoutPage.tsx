@@ -12,7 +12,7 @@ import type { CartSummary, CouponValidation, PaymentMethod } from "../types/stor
 import { useStorefront } from "../storefront/storefront-context";
 import { getActiveCustomerId } from "../storefront/customer";
 
-function formatMoney(amount: number, currencySymbol = "Rs.") {
+function formatMoney(amount: number, currencySymbol = "LKR.") {
   const safeAmount = Number(amount || 0);
   return `${currencySymbol} ${safeAmount.toLocaleString("en-US")}`;
 }

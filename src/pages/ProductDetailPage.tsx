@@ -5,7 +5,7 @@ import { useStorefront } from "../storefront/storefront-context";
 import { fetchProductBySlug } from "../api";
 import { useCartStore } from "../store/cart-store";
 
-function formatMoney(amount: number, currencySymbol = "Rs.") {
+function formatMoney(amount: number, currencySymbol = "LKR.") {
   const safeAmount = Number(amount || 0);
   return `${currencySymbol} ${safeAmount.toLocaleString("en-US")}`;
 }

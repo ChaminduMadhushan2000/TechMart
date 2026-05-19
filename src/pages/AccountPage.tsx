@@ -5,7 +5,7 @@ import type { Order } from "../types/storefront";
 import { clearCustomerAuth, getStoredCustomer } from "../storefront/customer";
 import { useStorefront } from "../storefront/storefront-context";
 
-function formatMoney(amount: number, currencySymbol = "Rs.") {
+function formatMoney(amount: number, currencySymbol = "LKR.") {
   const safeAmount = Number(amount || 0);
   return `${currencySymbol} ${safeAmount.toLocaleString("en-US")}`;
 }

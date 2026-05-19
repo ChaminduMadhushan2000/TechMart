@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useStorefront } from "../storefront/storefront-context";
 import { useCartStore } from "../store/cart-store";
 
-function formatMoney(amount: number, currencySymbol = "Rs.") {
+function formatMoney(amount: number, currencySymbol = "LKR.") {
   const safeAmount = Number(amount || 0);
   return `${currencySymbol} ${safeAmount.toLocaleString("en-US")}`;
 }
