@@ -225,11 +225,11 @@ export default function ProductsPage() {
                 </Link>
 
                 <div className="flex items-center justify-between">
-                  <StockBadge stock={product.stockQuantity || 0} />
+                  <StockBadge stock={product.stock || 0} />
 
-                  {(product.stockQuantity || 0) > 0 && (
+                  {(product.stock || 0) > 0 && (
                     <span className="text-xs text-slate-500">
-                      {product.stockQuantity} left
+                      {product.stock} left
                     </span>
                   )}
                 </div>

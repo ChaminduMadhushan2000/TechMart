@@ -37,7 +37,7 @@ export interface ProductVariant {
   name: string;
   price: number;
   sku?: string | null;
-  stockQuantity?: number;
+  stock?: number;
   attributes?: Record<string, unknown>;
   isActive?: boolean;
 }
@@ -54,7 +54,7 @@ export interface Product {
   id: string;
   name: string;
   brand: string | null;
-  stockQuantity: number;
+  stock: number;
   slug: string;
   description?: string | null;
   basePrice: number;
@@ -108,7 +108,7 @@ export interface CartLineProduct {
   name: string;
   slug: string;
   image?: string | null;
-  stockQuantity?: number;
+  stock?: number;
 }
 
 export interface CartLineVariant {

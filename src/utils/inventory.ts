@@ -10,7 +10,7 @@ export function validateCartInventory(
 ): InventoryValidationResult {
 
   for (const item of cart.items) {
-    const stock = item.product?.stockQuantity || 0;
+    const stock = item.product?.stock || 0;
 
     if (stock <= 0) {
       return {

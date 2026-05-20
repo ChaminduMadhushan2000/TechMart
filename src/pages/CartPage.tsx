@@ -81,12 +81,12 @@ export default function CartPage() {
                   <input
                     type="number"
                     min={1}
-                    max={item.product?.stockQuantity || 1}
+                    max={item.product?.stock || 1}
                     value={item.quantity}
                     onChange={(event) => handleQuantityChange(
                                 item.id,
                                 Math.max(1, Number(event.target.value)),
-                                item.product?.stockQuantity || 0
+                                item.product?.stock || 0
                               )}
                     className="h-10 w-20 rounded-lg border border-slate-200 px-3 text-sm"
                   />

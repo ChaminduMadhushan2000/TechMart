@@ -7,7 +7,7 @@ export interface ProductCard {
   name: string;
   price: string;
   image: string;
-  stock?: number;
+  stock: number;
   rating?: number;
   slug?: string;
 }
@@ -25,6 +25,7 @@ const FeaturedProducts = ({
   gridColumns = 4,
   products = [],
 }: FeaturedProductsProps) => {
+
   const visible = products.slice(0, maxProducts);
   const gridClass =
     gridColumns >= 4

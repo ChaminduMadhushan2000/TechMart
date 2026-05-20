@@ -6,7 +6,6 @@ import { fetchProductBySlug } from "../api";
 import { useCartStore } from "../store/cart-store";
 import StockBadge from "../components/products/StockBadge";
 import { getStockStatus } from "../utils/stock";
-import CompareButton from "../components/compare/CompareButton";
 
 function formatMoney(amount: number, currencySymbol = "LKR.") {
   const safeAmount = Number(amount || 0);
@@ -104,7 +103,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  const stockStatus = getStockStatus(product.stockQuantity || 0);
+  const stockStatus = getStockStatus(product.stock || 0);
 
   return (
     <section className="mx-auto w-full max-w-6xl px-6 py-10">
@@ -158,11 +157,11 @@ export default function ProductDetailPage() {
             </p>
           </div>
           <div className="mt-3 flex items-center gap-3">
-            <StockBadge stock={product.stockQuantity || 0} />
+            <StockBadge stock={product.stock || 0} />
 
-            {product.stockQuantity > 0 && (
+            {product.stock > 0 && (
               <span className="text-sm text-slate-500">
-                {product.stockQuantity} items available
+                {product.stock} items available
               </span>
             )}
           </div>
@@ -170,7 +169,6 @@ export default function ProductDetailPage() {
           {product.description ? (
             <p className="text-slate-600">{product.description}</p>
           ) : null}
-          <CompareButton product={product} />
 
           {variantOptions.length ? (
             <div>

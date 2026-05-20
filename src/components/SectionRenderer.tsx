@@ -25,14 +25,14 @@ const defaultCategories = [
 ];
 
 const defaultProducts: ProductCard[] = [
-  { id: "p1", name: "AstraBook Pro 14", price: "Rs. 219,999", image: "https://images.unsplash.com/photo-1517336714739-489689fd1ca8?auto=format&fit=crop&w=800&q=80" },
-  { id: "p2", name: "NeoPhone X12", price: "Rs. 159,999", image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80" },
-  { id: "p3", name: "Pulse Buds 3", price: "Rs. 21,999", image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=800&q=80" },
-  { id: "p4", name: 'Quantum 55" 4K TV', price: "Rs. 189,999", image: "https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&w=800&q=80" },
-  { id: "p5", name: "FocusCam Mirrorless", price: "Rs. 129,999", image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80" },
-  { id: "p6", name: "SpeedCore Gaming Mouse", price: "Rs. 8,499", image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=800&q=80" },
-  { id: "p7", name: "Volt Power Bank 20,000mAh", price: "Rs. 9,299", image: "https://images.unsplash.com/photo-1609592806955-36dc7f2f1f18?auto=format&fit=crop&w=800&q=80" },
-  { id: "p8", name: "SkyFit Watch", price: "Rs. 34,999", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80" },
+  { id: "p1", name: "AstraBook Pro 14", price: "Rs. 219,999",stock:5, image: "https://images.unsplash.com/photo-1517336714739-489689fd1ca8?auto=format&fit=crop&w=800&q=80" },
+  { id: "p2", name: "NeoPhone X12", price: "Rs. 159,999",stock:5, image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80" },
+  { id: "p3", name: "Pulse Buds 3", price: "Rs. 21,999",stock:5, image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=800&q=80" },
+  { id: "p4", name: 'Quantum 55" 4K TV', price: "Rs. 189,999",stock:5, image: "https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&w=800&q=80" },
+  { id: "p5", name: "FocusCam Mirrorless", price: "Rs. 129,999",stock:5, image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80" },
+  { id: "p6", name: "SpeedCore Gaming Mouse", price: "Rs. 8,499",stock:5, image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=800&q=80" },
+  { id: "p7", name: "Volt Power Bank 20,000mAh", price: "Rs. 9,299",stock:5, image: "https://images.unsplash.com/photo-1609592806955-36dc7f2f1f18?auto=format&fit=crop&w=800&q=80" },
+  { id: "p8", name: "SkyFit Watch", price: "Rs. 34,999",stock:5, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80" },
 ];
 
 const defaultBrands = [
@@ -68,6 +68,7 @@ function mapProducts(products: Product[], currencySymbol?: string): ProductCard[
       id: product.id,
       name: product.name,
       slug: product.slug,
+      stock: product.stock || 0,
       price: formatMoney(price, currencySymbol),
       image: product.images?.[0]?.url || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
       rating: typeof product.metadata?.rating === "number" ? product.metadata.rating : undefined,
