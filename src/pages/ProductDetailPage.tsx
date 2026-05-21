@@ -5,7 +5,8 @@ import { useStorefront } from "../storefront/storefront-context";
 import { fetchProductBySlug } from "../api";
 import { useCartStore } from "../store/cart-store";
 import StockBadge from "../components/products/StockBadge";
-import { getStockStatus } from "../utils/stock";
+import toast from "react-hot-toast";
+import { validateAddToCart } from "../utils/inventory";
 
 function formatMoney(amount: number, currencySymbol = "LKR.") {
   const safeAmount = Number(amount || 0);
@@ -26,9 +27,10 @@ export default function ProductDetailPage() {
   const [selectedVariant, setSelectedVariant] = useState<string | undefined>(
     undefined,
   );
-  const [adding, setAdding] = useState(false);
 
   const addItem = useCartStore((state) => state.addItem);
+  const cart = useCartStore((state) => state.cart);
+
   useEffect(() => {
     if (!slug) return;
     let cancelled = false;
@@ -71,18 +73,36 @@ export default function ProductDetailPage() {
     );
   }, [product]);
 
-  const handleAddToCart = async () => {
-    if (!product) return;
+  const handleAddToCart = async ( product: Product) => {
+
+    const existingItem = cart?.items.find(
+      (item) =>
+        item.productId === product.id
+    );
+
+    const existingQuantity = existingItem?.quantity || 0;
+
+    const validation = validateAddToCart(
+      existingQuantity,
+      quantity,
+      product.stock
+    );
+
+    if (!validation.valid) {
+      toast.error(validation.message || "Cannot add product");
+      return;
+    }
 
     try {
-      setAdding(true);
+      await addItem(
+        product.id,
+        quantity
+      );
 
-      await addItem(product.id, quantity, selectedVariant);
-    } finally {
-      setAdding(false);
+    } catch {
+      toast.error("Failed to add to cart");
     }
   };
-
   if (loading) {
     return (
       <section className="mx-auto w-full max-w-6xl px-6 py-10">
@@ -103,7 +123,6 @@ export default function ProductDetailPage() {
     );
   }
 
-  const stockStatus = getStockStatus(product.stock || 0);
 
   return (
     <section className="mx-auto w-full max-w-6xl px-6 py-10">
@@ -208,15 +227,10 @@ export default function ProductDetailPage() {
 
           <button
             type="button"
-            onClick={handleAddToCart}
-            disabled={adding || !stockStatus.canPurchase}
+            onClick={() => handleAddToCart(product)}
             className="h-12 w-full rounded-xl bg-brandYellow text-sm font-black text-slate-900 transition-all hover:bg-yellow-400 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {adding
-              ? "Adding..."
-              : !stockStatus.canPurchase
-                ? "Out of Stock"
-                : "Add to cart"}
+            Add to cart
           </button>
         </div>
       </div>

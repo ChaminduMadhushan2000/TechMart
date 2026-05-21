@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { useStorefront } from "../storefront/storefront-context";
 import { useCartStore } from "../store/cart-store";
-import { validatePurchaseQuantity } from "../utils/inventory";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 function formatMoney(amount: number, currencySymbol = "LKR.") {
   const safeAmount = Number(amount || 0);
@@ -26,19 +26,27 @@ export default function CartPage() {
   );
 
   
-  const handleQuantityChange = (
+  const handleQuantityChange = async (
     itemId: string,
-    quantity: number,
-    stock: number
+    quantity: number
   ) => {
-    const validation = validatePurchaseQuantity(quantity, stock);
+    try {
+      await updateItem(itemId, quantity);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const message =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          "Failed to update cart";
 
-    if (!validation.valid) {
-      toast.error(validation.message || "Invalid quantity");
-      return;
+        toast.error(message);
+        console.error("Backend error:", error.response?.data);
+        return;
+      }
+
+      toast.error("Unexpected error occurred");
+      console.error(error);
     }
-
-    updateItem(itemId, quantity);
   };
 
 
@@ -81,13 +89,13 @@ export default function CartPage() {
                   <input
                     type="number"
                     min={1}
-                    max={item.product?.stock || 1}
                     value={item.quantity}
-                    onChange={(event) => handleQuantityChange(
-                                item.id,
-                                Math.max(1, Number(event.target.value)),
-                                item.product?.stock || 0
-                              )}
+                    onChange={(event) =>
+                      handleQuantityChange(
+                        item.id,
+                        Math.max(1, Number(event.target.value))
+                      )
+                    }
                     className="h-10 w-20 rounded-lg border border-slate-200 px-3 text-sm"
                   />
                   <button

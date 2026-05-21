@@ -51,6 +51,35 @@ export function validatePurchaseQuantity(
     };
   }
 
+  
+
+  return {
+    valid: true,
+  };
+}
+
+export function validateAddToCart(
+  existingQuantity: number,
+  addingQuantity: number,
+  stock: number,
+): InventoryValidationResult {
+
+  if (stock <= 0) {
+    return {
+      valid: false,
+      message: "Product is out of stock",
+    };
+  }
+
+  const totalQuantity = existingQuantity + addingQuantity;
+
+  if (totalQuantity > stock) {
+    return {
+      valid: false,
+      message: `Only ${stock} items available`,
+    };
+  }
+
   return {
     valid: true,
   };

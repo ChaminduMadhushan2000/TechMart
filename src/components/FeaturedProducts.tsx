@@ -1,6 +1,8 @@
 import { ShoppingCart, Star } from "lucide-react";
 import { useCartStore } from "../store/cart-store";
 import StockBadge from "./products/StockBadge";
+import toast from "react-hot-toast";
+import { validateAddToCart } from "../utils/inventory";
 
 export interface ProductCard {
   id: string;
@@ -37,6 +39,35 @@ const FeaturedProducts = ({
   const addItem = useCartStore(
     (state) => state.addItem
   );
+  const cart = useCartStore(
+    (state) => state.cart
+  );
+
+  const handleAddToCart = async (product: ProductCard) => {
+
+    const existingItem = cart?.items.find(
+      (item) => item.productId === product.id
+    );
+
+    const existingQuantity = existingItem?.quantity || 0;
+
+    const validation = validateAddToCart(
+      existingQuantity,
+      1,
+      product.stock
+    );
+
+    if (!validation.valid) {
+      toast.error(validation.message || "Cannot add product");
+      return;
+    }
+
+    try {
+      await addItem(product.id, 1);
+    } catch {
+      toast.error("Failed to add to cart");
+    }
+  };
 
   return (
     <section className="rounded-xl bg-white p-6 shadow-sm" aria-label="Featured Products">
@@ -61,7 +92,7 @@ const FeaturedProducts = ({
                 loading="lazy"
               />
               <button 
-                onClick={() => addItem(product.id, 1)}
+                onClick={() => handleAddToCart(product)}
                 disabled={(product.stock || 0) <= 0}
                 className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition-colors hover:bg-brandYellow disabled:cursor-not-allowed disabled:opacity-50">
                 <ShoppingCart size={20} className="text-slate-700" />

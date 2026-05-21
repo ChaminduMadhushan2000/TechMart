@@ -85,7 +85,7 @@ export const useCartStore = create<CartStore>()(
 
           toast.success("Cart updated");
         } catch (error) {
-          toast.error("Failed to update cart");
+          throw error;
         }
       },
 
